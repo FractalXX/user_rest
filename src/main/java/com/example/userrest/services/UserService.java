@@ -2,6 +2,7 @@ package com.example.userrest.services;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
 import com.example.userrest.data.model.User;
@@ -10,7 +11,7 @@ import com.example.userrest.data.util.PersistenceHelper;
 @ApplicationScoped
 @Transactional
 public class UserService {
-  
+
   @Inject
   private PersistenceHelper helper;
 
@@ -23,13 +24,23 @@ public class UserService {
     return this.helper.getEntityManager().find(User.class, id);
   }
 
-  public User addUser(String userName, String password, String email) {
-    User user = new User();
-    user.setUserName(userName);
-    user.setPassword(password);
-    user.setEmail(email);
+  public void removeById(long id) {
+    this.helper.getEntityManager().remove(this.helper.getEntityManager().find(User.class, id));
+  }
 
+  public void addUser(User user) {
     this.helper.getEntityManager().persist(user);
-    return user;
+  }
+
+  public User login(String userName, String password) {
+    TypedQuery<User> query = this.helper.getEntityManager().createNamedQuery("User.findByNameAndPassword", User.class);
+    query.setParameter("userName", userName);
+    query.setParameter("password", password);
+
+    try {
+      return query.getSingleResult();
+    } catch (Exception e) {
+      return null;
+    }
   }
 }

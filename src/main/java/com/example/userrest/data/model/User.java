@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -18,7 +19,8 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "Users")
-@NamedQueries({ @NamedQuery(name = "User.findAll", query = "SELECT u FROM User u") })
+@NamedQueries({ @NamedQuery(name = "User.findAll", query = "SELECT u FROM User u"),
+    @NamedQuery(name = "User.findByNameAndPassword", query = "SELECT u FROM User u WHERE userName = :userName AND password = :password") })
 public class User {
 
   @Id
@@ -34,7 +36,7 @@ public class User {
   @Column(unique = true)
   private String email;
 
-  @ManyToMany(cascade = { CascadeType.ALL })
+  @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
   @JoinTable(name = "User_Role", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
       @JoinColumn(name = "role_id") })
   private Set<Role> roles = new HashSet<>();
