@@ -1,5 +1,9 @@
 package com.example.userrest.services;
 
+import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.util.Random;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.TypedQuery;
@@ -38,9 +42,30 @@ public class UserService {
     query.setParameter("password", password);
 
     try {
-      return query.getSingleResult();
+      User user = query.getSingleResult();
+      user.setToken(this.generateToken());
+      this.helper.getEntityManager().merge(user);
+      return user;
     } catch (Exception e) {
+      e.printStackTrace();
       return null;
     }
+  }
+
+  public User getUserByToken(String token) {
+    TypedQuery<User> query = this.helper.getEntityManager().createNamedQuery("User.findByToken", User.class);
+    query.setParameter("token", token);
+
+    try {
+      return query.getSingleResult();
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  public String generateToken() {
+    Random random = new SecureRandom();
+    return new BigInteger(130, random).toString(32);
   }
 }

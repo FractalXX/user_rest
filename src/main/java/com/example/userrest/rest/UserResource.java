@@ -6,6 +6,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import com.example.userrest.data.model.User;
+import com.example.userrest.data.util.PermissionName;
+import com.example.userrest.rest.security.PermissionsAllowed;
 import com.example.userrest.services.UserService;
 
 import javax.ws.rs.Consumes;
@@ -25,6 +27,7 @@ public class UserResource {
 
   @GET
   @Produces("application/json")
+  @PermissionsAllowed({ PermissionName.LIST_USERS })
   public User[] getAll() {
     return this.service.getAllUsers();
   }
@@ -32,6 +35,7 @@ public class UserResource {
   @GET
   @Path("{id}")
   @Produces("application/json")
+  @PermissionsAllowed({ PermissionName.LIST_USERS })
   public User getUser(@PathParam("id") long id) {
     return this.service.getUserById(id);
   }
@@ -39,6 +43,7 @@ public class UserResource {
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
+  @PermissionsAllowed({ PermissionName.ADD_USER })
   public Response addUser(User user) {
     this.service.addUser(user);
     return Response.ok().build();
@@ -46,6 +51,7 @@ public class UserResource {
 
   @DELETE
   @Path("{id}")
+  @PermissionsAllowed({ PermissionName.DELETE_USER })
   public Response deleteUser(@PathParam("id") long id) {
     this.service.removeById(id);
     return Response.ok().build();

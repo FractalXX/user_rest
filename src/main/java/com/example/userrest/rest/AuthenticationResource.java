@@ -1,5 +1,6 @@
 package com.example.userrest.rest;
 
+import javax.annotation.security.PermitAll;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -24,6 +25,7 @@ public class AuthenticationResource {
   @Path("register")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
+  @PermitAll
   public User register(User user) {
     this.service.addUser(user);
     return user;
@@ -33,6 +35,7 @@ public class AuthenticationResource {
   @Path("login")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
+  @PermitAll
   public Response login(LoginCredentials credentials) {
     User user = this.service.login(credentials.getUserName(), credentials.getPassword());
     if (user != null) {

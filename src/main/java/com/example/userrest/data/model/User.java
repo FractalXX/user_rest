@@ -17,10 +17,14 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @Entity
 @Table(name = "Users")
 @NamedQueries({ @NamedQuery(name = "User.findAll", query = "SELECT u FROM User u"),
-    @NamedQuery(name = "User.findByNameAndPassword", query = "SELECT u FROM User u WHERE userName = :userName AND password = :password") })
+    @NamedQuery(name = "User.findByNameAndPassword", query = "SELECT u FROM User u WHERE userName = :userName AND password = :password"),
+    @NamedQuery(name = "User.findByToken", query = "SELECT u FROM User u WHERE token = :token") })
 public class User {
 
   @Id
@@ -31,10 +35,15 @@ public class User {
   private String userName;
 
   @Column
+  @JsonProperty
   private String password;
 
   @Column(unique = true)
   private String email;
+
+  @Column
+  @JsonIgnore
+  private String token;
 
   @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
   @JoinTable(name = "User_Role", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
@@ -57,10 +66,12 @@ public class User {
     this.userName = userName;
   }
 
+  @JsonProperty
   public String getPassword() {
     return password;
   }
 
+  @JsonIgnore
   public void setPassword(String password) {
     this.password = password;
   }
@@ -71,6 +82,14 @@ public class User {
 
   public void setEmail(String email) {
     this.email = email;
+  }
+
+  public String getToken() {
+    return this.token;
+  }
+
+  public void setToken(String token) {
+    this.token = token;
   }
 
   public Set<Role> getRoles() {
