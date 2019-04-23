@@ -1,7 +1,7 @@
 package com.example.userrest.data.util;
 
 public enum PermissionName {
-  LIST_USERS("LIST_USERS"), ADD_USER("ADD_USER"), DELETE_USER("DELETE_USER");
+  LIST_USERS("LIST_USERS"), ADD_USER("ADD_USER"), DELETE_USER("DELETE_USER"), MODIFY_USER("MODIFY_USER");
 
   private String name;
 

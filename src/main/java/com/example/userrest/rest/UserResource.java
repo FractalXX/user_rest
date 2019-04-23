@@ -7,16 +7,19 @@ import javax.ws.rs.PathParam;
 
 import com.example.userrest.data.model.User;
 import com.example.userrest.data.util.PermissionName;
+import com.example.userrest.rest.security.AuthenticatedUser;
 import com.example.userrest.rest.security.PermissionsAllowed;
 import com.example.userrest.services.UserService;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.PATCH;
 import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 @ApplicationScoped
 @Path("/users")
@@ -55,5 +58,15 @@ public class UserResource {
   public Response deleteUser(@PathParam("id") long id) {
     this.service.removeById(id);
     return Response.ok().build();
+  }
+
+  @PATCH
+  @Path("{id}")
+  @PermissionsAllowed({ PermissionName.MODIFY_USER })
+  public Response modifyUser(User user, @PathParam("id") long id) {
+    if (this.service.modifyUser(id, user)) {
+      return Response.status(Status.OK).build();
+    }
+    return Response.status(Status.BAD_REQUEST).build();
   }
 }

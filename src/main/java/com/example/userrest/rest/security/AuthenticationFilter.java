@@ -1,6 +1,7 @@
 package com.example.userrest.rest.security;
 
 import java.lang.reflect.Method;
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.Set;
 
 import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -26,6 +28,10 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
   @Inject
   private UserService userService;
+
+  @Inject
+  @AuthenticatedUser
+  private Event<String> userAuthenticatedEvent;
 
   @Context
   private ResourceInfo resourceInfo;
@@ -80,26 +86,31 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         PermissionsAllowed permissionsAnnotation = method.getAnnotation(PermissionsAllowed.class);
         Set<PermissionName> permissions = new HashSet<>(Arrays.asList(permissionsAnnotation.value()));
 
-        // Assume that the user has no permission
-        boolean allowed = false;
-        for (PermissionName permission : permissions) {
-          System.out.println(permission);
-          // Check if the user has a role that has appropriate permissions
-          if (user.getRoles().stream()
-              .anyMatch((x) -> x.getPermissions().stream().anyMatch((p) -> p.getName() == permission))) {
-            allowed = true;
-            break;
+        // If there are no specified permissions, anyone with successful authentication
+        // can proceed
+        if (!permissions.isEmpty()) {
+          // Assume that the user has no permission
+          boolean allowed = false;
+          for (PermissionName permission : permissions) {
+            // Check if the user has a role that has appropriate permissions
+            if (user.getRoles().stream()
+                .anyMatch((x) -> x.getPermissions().stream().anyMatch((p) -> p.getName() == permission))) {
+              allowed = true;
+              break;
+            }
+          }
+
+          // Abort if the user does not have permission
+          if (!allowed) {
+            requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
+                .entity("You cannot access this resource: You do not have permission.").build());
+            return;
           }
         }
-        System.out.println(allowed);
-
-        // Abort if the user does not have permission
-        if (!allowed) {
-          requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
-              .entity("You cannot access this resource: You do not have permission.").build());
-          return;
-        }
       }
+
+      // If authentication succeeds, fire the authenticated event
+      this.userAuthenticatedEvent.fire(token);
     }
   }
 

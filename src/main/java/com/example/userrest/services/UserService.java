@@ -52,6 +52,21 @@ public class UserService {
     }
   }
 
+  public boolean modifyUser(long id, User data) {
+    User user = this.helper.getEntityManager().find(User.class, id);
+    try {
+      user.setEmail(data.getEmail());
+      user.setPassword(data.getPassword());
+      user.setRoles(data.getRoles());
+
+      this.helper.getEntityManager().merge(user);
+      return true;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return false;
+    }
+  }
+
   public User getUserByToken(String token) {
     TypedQuery<User> query = this.helper.getEntityManager().createNamedQuery("User.findByToken", User.class);
     query.setParameter("token", token);

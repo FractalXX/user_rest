@@ -1,5 +1,6 @@
 package com.example.userrest.data.model;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,6 +18,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
+import com.example.userrest.data.util.PermissionName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -35,7 +37,6 @@ public class User {
   private String userName;
 
   @Column
-  @JsonProperty
   private String password;
 
   @Column(unique = true)
@@ -66,12 +67,10 @@ public class User {
     this.userName = userName;
   }
 
-  @JsonProperty
   public String getPassword() {
     return password;
   }
 
-  @JsonIgnore
   public void setPassword(String password) {
     this.password = password;
   }
@@ -98,5 +97,15 @@ public class User {
 
   public void setRoles(Set<Role> roles) {
     this.roles = roles;
+  }
+
+  public boolean hasPermission(PermissionName name) {
+    for (Role role : this.roles) {
+      if (role.getPermissions().stream().anyMatch((p) -> p.getName() == name)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }

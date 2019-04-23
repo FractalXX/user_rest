@@ -9,6 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import com.example.userrest.data.model.User;
 import com.example.userrest.rest.util.LoginCredentials;
@@ -24,11 +25,10 @@ public class AuthenticationResource {
   @POST
   @Path("register")
   @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
   @PermitAll
-  public User register(User user) {
+  public Response register(User user) {
     this.service.addUser(user);
-    return user;
+    return Response.status(Status.OK).build();
   }
 
   @POST

@@ -29,7 +29,15 @@ public class Permission {
     return this.id;
   }
 
+  public void setId(long id) {
+    this.id = id;
+  }
+
   public PermissionName getName() {
     return this.name;
+  }
+
+  public void setName(PermissionName name) {
+    this.name = name;
   }
 }
