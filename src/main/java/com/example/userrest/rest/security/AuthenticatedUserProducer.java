@@ -12,7 +12,6 @@ import com.example.userrest.services.UserService;
 public class AuthenticatedUserProducer {
 
   @Produces
-  @RequestScoped
   @AuthenticatedUser
   private User authenticatedUser;
 

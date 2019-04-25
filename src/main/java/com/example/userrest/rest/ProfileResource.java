@@ -1,6 +1,7 @@
 package com.example.userrest.rest;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -15,7 +16,7 @@ import com.example.userrest.data.model.User;
 import com.example.userrest.rest.security.AuthenticatedUser;
 import com.example.userrest.services.UserService;
 
-@ApplicationScoped
+@RequestScoped
 @Path("/profile")
 public class ProfileResource {
 
